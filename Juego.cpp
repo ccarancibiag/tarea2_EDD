@@ -82,15 +82,39 @@ bool Juego::cargarInicio(const string& ruta) {
             cout<<"[CARGA] ERROR\n";
             return false;
         }
-        if(header.empty()) {
-            header=linea;
-            string esperado=seccion=="@GRIMORIO"?"ID|NOMBRE|COSTE|ATAQUE|EFECTO":seccion=="@BESTIARIO"?"ID|NOMBRE|VIDA|ATAQUE":"ID";
-            if(header!=esperado) {
-                cout<<"[CARGA] ERROR\n";
-                return false;
-            }
-            continue;
-        }
+    if(header.empty()) {
+    header=linea;
+
+    string h[5];
+    int nh=campos(linea,h,5);
+    bool valido=false;
+
+    if(seccion=="@GRIMORIO") {
+        valido=(nh==5 &&
+                h[0]=="ID" &&
+                h[1]=="NOMBRE" &&
+                h[2]=="COSTE" &&
+                h[3]=="ATAQUE" &&
+                h[4]=="EFECTO");
+    }
+    else if(seccion=="@BESTIARIO") {
+        valido=(nh==4 &&
+                h[0]=="ID" &&
+                h[1]=="NOMBRE" &&
+                h[2]=="VIDA" &&
+                h[3]=="ATAQUE");
+    }
+    else if(seccion=="@MAZO" || seccion=="@HORDA") {
+        valido=(nh==1 && h[0]=="ID");
+    }
+
+    if(!valido) {
+        cout<<"[CARGA] ERROR\n";
+        return false;
+    }
+
+    continue;
+}
         string c[6];
         int n=campos(linea,c,6),id;
         if(n<1||!entero(c[0],id)||id<1||id>9999) {
